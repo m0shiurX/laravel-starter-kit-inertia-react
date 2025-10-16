@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Business;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
@@ -16,7 +17,7 @@ it('renders verify email page', function (): void {
         ->get(route('verification.notice'));
 
     $response->assertOk()
-        ->assertInertia(fn ($page) => $page
+        ->assertInertia(fn($page) => $page
             ->component('user-email-verification-notification/create')
             ->has('status'));
 });
@@ -25,6 +26,7 @@ it('redirects verified users to dashboard', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => now(),
     ]);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('home')
@@ -56,6 +58,8 @@ it('redirects verified users when sending notification', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => now(),
     ]);
+
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('verification.notice')

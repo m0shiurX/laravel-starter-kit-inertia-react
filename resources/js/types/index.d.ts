@@ -3,6 +3,16 @@ import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
+    isPlatformUser: boolean;
+    globalRoles: string[];
+}
+
+export interface Business {
+    id: number;
+    name: string;
+    owner_id: number;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface BreadcrumbItem {
@@ -26,6 +36,8 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    currentBusiness: Business | null;
+    businesses: Business[];
     sidebarOpen: boolean;
     [key: string]: unknown;
 }

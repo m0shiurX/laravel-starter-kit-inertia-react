@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Business;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
 
@@ -9,6 +10,8 @@ it('may verify email', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
     ]);
+
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $verificationUrl = URL::temporarySignedRoute(
         'verification.verify',
@@ -22,13 +25,15 @@ it('may verify email', function (): void {
 
     expect($user->refresh()->hasVerifiedEmail())->toBeTrue();
 
-    $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    $response->assertRedirect(route('dashboard', absolute: false) . '?verified=1');
 });
 
 it('redirects to dashboard if already verified', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => now(),
     ]);
+
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $verificationUrl = URL::temporarySignedRoute(
         'verification.verify',
@@ -40,7 +45,7 @@ it('redirects to dashboard if already verified', function (): void {
         ->fromRoute('verification.notice')
         ->get($verificationUrl);
 
-    $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    $response->assertRedirect(route('dashboard', absolute: false) . '?verified=1');
 });
 
 it('requires valid signature', function (): void {

@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Models\Business;
 use App\Models\User;
 
 it('renders profile edit page', function (): void {
     $user = User::factory()->create();
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('dashboard')
         ->get(route('user-profile.edit'));
 
     $response->assertOk()
-        ->assertInertia(fn ($page) => $page
+        ->assertInertia(fn($page) => $page
             ->component('user-profile/edit')
             ->has('status'));
 });
@@ -22,6 +24,7 @@ it('may update profile information', function (): void {
         'name' => 'Old Name',
         'email' => 'old@example.com',
     ]);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -41,6 +44,7 @@ it('resets email verification when email changes', function (): void {
         'email' => 'old@example.com',
         'email_verified_at' => now(),
     ]);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -61,6 +65,7 @@ it('keeps email verification when email stays the same', function (): void {
         'email' => 'same@example.com',
         'email_verified_at' => $verifiedAt,
     ]);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -76,6 +81,7 @@ it('keeps email verification when email stays the same', function (): void {
 
 it('requires name', function (): void {
     $user = User::factory()->create();
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -89,6 +95,7 @@ it('requires name', function (): void {
 
 it('requires email', function (): void {
     $user = User::factory()->create();
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -102,6 +109,7 @@ it('requires email', function (): void {
 
 it('requires valid email', function (): void {
     $user = User::factory()->create();
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -116,7 +124,10 @@ it('requires valid email', function (): void {
 
 it('requires unique email except own', function (): void {
     $existingUser = User::factory()->create(['email' => 'existing@example.com']);
+    Business::factory()->create(['owner_id' => $existingUser->id]);
+
     $user = User::factory()->create(['email' => 'test@example.com']);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')
@@ -134,6 +145,7 @@ it('allows keeping same email', function (): void {
         'name' => 'Test User',
         'email' => 'test@example.com',
     ]);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $response = $this->actingAs($user)
         ->fromRoute('user-profile.edit')

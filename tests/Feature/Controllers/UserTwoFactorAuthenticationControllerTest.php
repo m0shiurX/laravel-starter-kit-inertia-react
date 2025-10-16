@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Models\Business;
 use App\Models\User;
 
 it('renders two factor authentication page', function (): void {
     $user = User::factory()->create();
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->session(['auth.password_confirmed_at' => time()]);
 
@@ -13,13 +15,14 @@ it('renders two factor authentication page', function (): void {
         ->get(route('two-factor.show'));
 
     $response->assertOk()
-        ->assertInertia(fn ($page) => $page
+        ->assertInertia(fn($page) => $page
             ->component('user-two-factor-authentication/show')
             ->has('twoFactorEnabled'));
 });
 
 it('shows two factor disabled when not enabled', function (): void {
     $user = User::factory()->withoutTwoFactor()->create();
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->session(['auth.password_confirmed_at' => time()]);
 
@@ -27,7 +30,7 @@ it('shows two factor disabled when not enabled', function (): void {
         ->get(route('two-factor.show'));
 
     $response->assertOk()
-        ->assertInertia(fn ($page) => $page
+        ->assertInertia(fn($page) => $page
             ->component('user-two-factor-authentication/show')
             ->where('twoFactorEnabled', false));
 });
@@ -38,6 +41,7 @@ it('shows two factor enabled when enabled', function (): void {
         'two_factor_recovery_codes' => encrypt(json_encode(['code1', 'code2'])),
         'two_factor_confirmed_at' => now(),
     ]);
+    Business::factory()->create(['owner_id' => $user->id]);
 
     $this->actingAs($user)->session(['auth.password_confirmed_at' => time()]);
 
@@ -45,7 +49,7 @@ it('shows two factor enabled when enabled', function (): void {
         ->get(route('two-factor.show'));
 
     $response->assertOk()
-        ->assertInertia(fn ($page) => $page
+        ->assertInertia(fn($page) => $page
             ->component('user-two-factor-authentication/show')
             ->where('twoFactorEnabled', true));
 });
