@@ -15,11 +15,18 @@ export interface NavGroup {
     items: NavItem[];
 }
 
+export interface NavSection {
+    title?: string;
+    items: NavItem[];
+}
+
 export interface NavItem {
     title: string;
-    href: NonNullable<InertiaLinkProps['href']>;
+    href?: Nullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    childRoutes?: NavItem[];
+    badge?: string;
 }
 
 export interface SharedData {
