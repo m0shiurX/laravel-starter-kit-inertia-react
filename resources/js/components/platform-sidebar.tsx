@@ -1,4 +1,3 @@
-import { BusinessSwitcher } from '@/components/business-switcher';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -12,16 +11,22 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { type Business, type NavItem } from '@/types';
+import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Settings } from 'lucide-react';
+import {
+    BookOpen,
+    Building2,
+    Folder,
+    LayoutGrid,
+    Shield,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
-export function AppSidebar() {
+export function PlatformSidebar() {
     const page = usePage();
-    const currentBusiness = page.props.currentBusiness as Business | null;
-    const auth = page.props.auth as { isPlatformUser: boolean };
-    const isPlatformUser = auth.isPlatformUser;
+    const auth = page.props.auth as { globalRoles: string[] };
+    const globalRoles = auth.globalRoles;
 
     const mainNavItems: NavItem[] = [
         {
@@ -29,15 +34,21 @@ export function AppSidebar() {
             href: dashboard(),
             icon: LayoutGrid,
         },
-        ...(currentBusiness
-            ? [
-                  {
-                      title: 'Business Settings',
-                      href: `/businesses/${currentBusiness.id}/edit`,
-                      icon: Settings,
-                  },
-              ]
-            : []),
+        {
+            title: 'Users',
+            href: '/admin/users',
+            icon: Users,
+        },
+        {
+            title: 'Roles',
+            href: '/admin/roles',
+            icon: Shield,
+        },
+        {
+            title: 'Businesses',
+            href: '/admin/businesses',
+            icon: Building2,
+        },
     ];
 
     const footerNavItems: NavItem[] = [
@@ -64,11 +75,19 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                    {!isPlatformUser && (
-                        <SidebarMenuItem>
-                            <BusinessSwitcher />
-                        </SidebarMenuItem>
-                    )}
+                    <SidebarMenuItem>
+                        <div className="flex items-center gap-2 px-2 py-1.5 text-sm">
+                            <Shield className="h-4 w-4 text-primary" />
+                            <div className="flex-1">
+                                <div className="font-medium">
+                                    Platform Admin
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                    {globalRoles.join(', ')}
+                                </div>
+                            </div>
+                        </div>
+                    </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
 

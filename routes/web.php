@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\BusinessSwitchController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotification;
@@ -17,6 +19,27 @@ Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
+
+    // Platform Admin Routes
+    Route::prefix('admin')->name('admin.')->group(function (): void {
+        Route::get('dashboard', App\Http\Controllers\Admin\DashboardController::class)
+            ->name('dashboard');
+    });
+
+    // Business Management
+    Route::get('businesses/create', [BusinessController::class, 'create'])->name('business.create');
+    Route::post('businesses', [BusinessController::class, 'store'])->name('business.store');
+
+    // Business-specific routes (require context match)
+    Route::middleware('business.context')->group(function (): void {
+        Route::get('businesses/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
+        Route::patch('businesses/{business}', [BusinessController::class, 'update'])->name('business.update');
+        Route::delete('businesses/{business}', [BusinessController::class, 'destroy'])->name('business.destroy');
+    });
+
+    // Business Switching
+    Route::post('business/switch/{business}', [BusinessSwitchController::class, 'switch'])
+        ->name('business.switch');
 });
 
 Route::middleware('auth')->group(function (): void {

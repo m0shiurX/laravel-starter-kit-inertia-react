@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Services\TenantResolver;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -43,7 +44,11 @@ final class HandleInertiaRequests extends Middleware
             'quote' => ['message' => mb_trim((string) $message), 'author' => mb_trim((string) $author)],
             'auth' => [
                 'user' => $request->user(),
+                'isPlatformUser' => fn () => $request->user()?->isPlatformUser() ?? false,
+                'globalRoles' => fn () => $request->user()?->globalRoles() ?? [],
             ],
+            'currentBusiness' => fn (): ?\App\Models\Business => TenantResolver::getCurrentBusiness(),
+            'businesses' => fn () => $request->user()?->businesses()->get(),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

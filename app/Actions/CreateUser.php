@@ -15,7 +15,7 @@ final readonly class CreateUser
         // Registration always requires password
         assert($data->password !== null, 'Password is required for user registration');
 
-        $attributes = array_filter($data->toArray(), fn ($value) => $value !== null);
+        $attributes = array_filter($data->toArray(), fn ($value): bool => $value !== null);
 
         $user = User::query()->create([
             ...$attributes,
