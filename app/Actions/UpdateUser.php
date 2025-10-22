@@ -11,13 +11,13 @@ final readonly class UpdateUser
 {
     public function handle(User $user, UserData $data): void
     {
-        $updates = array_filter($data->toArray(), fn ($value) => $value !== null);
+        $updates = array_filter($data->toArray(), fn (mixed $value): true => (bool) $value !== null);
 
         if (! empty($updates['email']) && $updates['email'] !== $user->email) {
             $updates['email_verified_at'] = null;
         }
 
-        if (! empty($updates)) {
+        if ($updates !== []) {
             $user->update($updates);
         }
     }

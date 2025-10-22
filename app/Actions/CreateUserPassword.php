@@ -14,7 +14,7 @@ final readonly class CreateUserPassword
 {
     public function handle(AuthData $credentials): mixed
     {
-        $data = array_filter($credentials->toArray(), fn ($value) => $value !== null);
+        $data = array_filter($credentials->toArray(), fn (mixed $value): true => (bool) $value !== null);
 
         return Password::reset(
             $data,
