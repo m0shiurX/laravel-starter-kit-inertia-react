@@ -11,8 +11,8 @@
     "require": {
         "php": "^8.4.0",
         "inertiajs/inertia-laravel": "^2.0.10",
-        "laravel/fortify": "^1.31.1",
-        "laravel/framework": "^12.34",
+        "laravel/fortify": "^1.31.2",
+        "laravel/framework": "^12.35",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.12",
         "nunomaduro/essentials": "^1.0.1",
@@ -33,7 +33,7 @@
         "pestphp/pest-plugin-browser": "^4.1.1",
         "pestphp/pest-plugin-laravel": "^4.0.0",
         "pestphp/pest-plugin-type-coverage": "^4.0.2",
-        "rector/rector": "^2.2.3",
+        "rector/rector": "^2.2.4",
         "roave/security-advisories": "dev-latest"
     },
     "autoload": {
